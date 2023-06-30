@@ -7,10 +7,10 @@ const userSchema = mongoose.Schema({
   email: { type: String, required: true, lowercase: true},
   password: { type: String, required: true, min: 6 },
   photo:{ type: String, required: false},
-  asked: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Question' }],
-  answered: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Answer' }],
-  likedAnswers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Answer' }],
-  dislikedAnswers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Answer' }]
+  asked: {type: Array},
+  answered: {type: Array},
+  likedAnswers: {type: Array},
+  dislikedAnswers: {type: Array}
  
 });
 

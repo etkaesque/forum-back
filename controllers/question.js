@@ -5,24 +5,30 @@ const uniqid = require("uniqid")
 
 
 module.exports.ASK_QUESTION = async (req, res) => {
+    
 
     console.log("Ask question request recieved.")
 
-
     try {
+
+        const userID = req.body.id;
+
+        const user = await userModel.findOne({ id: userID });
+
+        const userIdObejct = user._id
+   
         const question = new questionModel({
             id: uniqid(),
             date_created: new Date(),
-            title:req.body.title,
+            title: req.body.title,
             content: req.body.content,
-            author: req.body.author,
+            author: userID,
+            authorIdObect: userIdObejct,
             answers: [],
 
         })
         
         const savedQuestion = await question.save();
-
-        const userID = req.body.id; // get from auth
 
         userModel
         .updateOne(
@@ -35,7 +41,7 @@ module.exports.ASK_QUESTION = async (req, res) => {
 
         res.status(200).json({ response: savedQuestion });
     } catch(error) {
-        console.log("failed to save a new question")
+        console.log("failed to save a new question", error)
         res.status(400).json({ error: error });
     }
 
@@ -65,10 +71,13 @@ module.exports.GET_ALL_QUESTIONS = async (req, res) => {
     console.log(" GET_ALL_QUESTIONS request recieved")
 
     try {
-        const questions = await questionModel.find()
-        res.status(200).json({ questions });
+        const questions = await questionModel.find().populate('authorIdObect', 'name')
+        const questionCount = await questionModel.countDocuments();
+        console.log(questions)
+        res.status(200).json({ questions, questionCount });
 
     } catch (error) {
+      console.log(error)
         res.status(400).json({ error });
     }
 

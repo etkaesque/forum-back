@@ -9,7 +9,7 @@ module.exports.ADD_ANSWER = async (req, res) => {
 
     console.log("Question add request recieved.")
 
-    // save answer to db
+
     try {
         const answer = new answerModel({
             id: uniqid(),
@@ -21,12 +21,10 @@ module.exports.ADD_ANSWER = async (req, res) => {
         
         const savedAnswer = await answer.save();
 
-        const userID = req.body.id; // get from auth
-        const questionID = req.params.id; // send from router.query and recieve via id params
-        const answerID = savedAnswer.id; // get from answer.save() above
+        const userID = req.body.id;
+        const questionID = req.params.id;
+        const answerID = savedAnswer.id; 
 
-
-        // save answer to question   
 
         questionModel
         .updateOne(
@@ -35,8 +33,7 @@ module.exports.ADD_ANSWER = async (req, res) => {
         )
         .exec();
 
-          
-         // save answer to user 
+        
         userModel
         .updateOne(
           { id: userID },

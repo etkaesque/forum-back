@@ -6,8 +6,8 @@ const answerSchema = mongoose.Schema({
   date_created:{ type: Date, immutable: true},
   date_edited:{ type: Date, default: () => Date.now()},
   content: { type: String, required: true, min: 3},
-  author: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  question: { type: mongoose.Schema.Types.ObjectId, ref: 'Question'}, 
+  author: { type: String, required: true, min: 3},
+  question: { type: Array}, 
   upvotes: { type: Number, default: 0},
   downvotes: { type: Number, default: 0},
   

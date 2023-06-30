@@ -204,7 +204,6 @@ module.exports.GET_JWT_TOKEN = async (req, res) => {
 
   return res.status(200).json({
     response: "JWT refresh token is valid. ",
-    jwt_token: jwt_token,
-    jwt_refresh_token: jwt_refresh_token,
+    jwt_token: jwt_token
   });
 };

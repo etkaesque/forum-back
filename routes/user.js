@@ -8,5 +8,6 @@ router.post("/signUp", SIGN_UP );
 router.post("/logIn", LOGIN);
 router.get("/user", authMiddleware, GET_USER_BY_ID);
 router.get(`/getNewJwtToken`, authMiddleware, GET_JWT_TOKEN);
+router.post(`/verifyToken`, authMiddleware, GET_JWT_TOKEN);
 
 module.exports = router;
