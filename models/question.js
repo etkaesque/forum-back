@@ -7,7 +7,7 @@ const questionSchema = mongoose.Schema({
   date_edited:{ type: Date, default: () => Date.now()},
   title: { type: String, required: true, min: 3},
   content: { type: String, required: true, min: 3},
-  author: { type: String},
+  author: { type: Object},
   authorIdObect: { type: mongoose.SchemaTypes.ObjectId, ref: "User"},
   answers: {type: Array},
 

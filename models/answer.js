@@ -6,10 +6,10 @@ const answerSchema = mongoose.Schema({
   date_created:{ type: Date, immutable: true},
   date_edited:{ type: Date, default: () => Date.now()},
   content: { type: String, required: true, min: 3},
-  author: { type: String, required: true, min: 3},
-  question: { type: Array}, 
-  upvotes: { type: Number, default: 0},
-  downvotes: { type: Number, default: 0},
+  author: { type: Object},
+  question_id: { type: String}, 
+  upvoted_by: { type: Array},
+  downvoted_by: { type: Array},
   
 
  

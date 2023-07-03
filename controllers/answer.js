@@ -7,16 +7,21 @@ const uniqid = require("uniqid")
 
 module.exports.ADD_ANSWER = async (req, res) => {
 
-    console.log("Question add request recieved.")
-
-
+ 
+  
     try {
         const answer = new answerModel({
             id: uniqid(),
             date_created: new Date(),
             content: req.body.content,
-            author: req.body.author,
-            question_id: req.body.question_id
+            author: {
+                name: req.body.name,
+                id: req.body.id,
+            },
+            question_id: req.params.id,
+            upvoted_by:[],
+            downvoted_by:[],
+
         })
         
         const savedAnswer = await answer.save();
@@ -100,3 +105,92 @@ module.exports.REMOVE_ANSWER = async (req, res) => {
 
 }
 
+module.exports.DOWNVOTE_ANSWER = async (req, res) => {
+
+    try {
+
+        const answer = await answerModel.findOne({ id: req.params.id });
+
+        const isDownvoted =  answer.downvoted_by.includes(req.body.id)
+
+        if(isDownvoted) {
+
+            await answerModel.updateOne(
+                { id: req.params.id },
+                { $pull: { downvoted_by: req.body.id } }
+              )
+              .exec();
+
+        } else {
+
+            await answerModel.updateOne(
+                { id: req.params.id },
+                { $push: { downvoted_by: req.body.id } }
+              )
+              .exec();
+
+              await answerModel.updateOne(
+                { id: req.params.id },
+                { $pull: { upvoted_by: req.body.id } }
+              )
+              .exec();
+
+            
+
+        }
+            
+ 
+
+        res.status(200).json({ response: !isDownvoted });
+
+    } catch (error) {
+        res.status(400).json({ error: error });
+
+    }
+
+}
+
+module.exports.UPVOTE_ANSWER = async (req, res) => {
+
+    try {
+
+        
+        const answer = await answerModel.findOne({ id: req.params.id });
+
+        const isUpvoted =  answer.upvoted_by.includes(req.body.id)
+
+        if(isUpvoted) {
+
+            await answerModel.updateOne(
+                { id: req.params.id },
+                { $pull: { upvoted_by: req.body.id } }
+              )
+              .exec();
+
+        } else {
+
+            await answerModel.updateOne(
+                { id: req.params.id },
+                { $push: { upvoted_by: req.body.id } }
+              )
+              .exec();
+
+
+              await answerModel.updateOne(
+                { id: req.params.id },
+                { $pull: { downvoted_by: req.body.id } }
+              )
+              .exec();
+
+        }
+            
+ 
+
+        res.status(200).json({ response: !isUpvoted });
+
+    } catch (error) {
+        res.status(400).json({ error: error });
+
+    }
+
+}

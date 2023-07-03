@@ -7,7 +7,6 @@ const uniqid = require("uniqid")
 module.exports.ASK_QUESTION = async (req, res) => {
     
 
-    console.log("Ask question request recieved.")
 
     try {
 
@@ -22,7 +21,10 @@ module.exports.ASK_QUESTION = async (req, res) => {
             date_created: new Date(),
             title: req.body.title,
             content: req.body.content,
-            author: userID,
+            author: {
+              name: req.body.name,
+              id: req.body.id,
+            },
             authorIdObect: userIdObejct,
             answers: [],
 
@@ -41,7 +43,7 @@ module.exports.ASK_QUESTION = async (req, res) => {
 
         res.status(200).json({ response: savedQuestion });
     } catch(error) {
-        console.log("failed to save a new question", error)
+       
         res.status(400).json({ error: error });
     }
 
@@ -68,16 +70,14 @@ module.exports.UPDATE_QUESTION = async (req, res) => {
 
 module.exports.GET_ALL_QUESTIONS = async (req, res) => {
 
-    console.log(" GET_ALL_QUESTIONS request recieved")
-
     try {
         const questions = await questionModel.find().populate('authorIdObect', 'name')
         const questionCount = await questionModel.countDocuments();
-        console.log(questions)
+       
         res.status(200).json({ questions, questionCount });
 
     } catch (error) {
-      console.log(error)
+ 
         res.status(400).json({ error });
     }
 
@@ -87,30 +87,99 @@ module.exports.GET_ALL_QUESTIONS = async (req, res) => {
 
 module.exports.GET_QUESTION_WITH_ANSWERS = async (req, res) => {
 
+  console.log("GET_QUESTION_WITH_ANSWERS got hit")
 
-    try {
-        const questionsWithAnswers = await questionModel
-          .aggregate([
-            {
-              $lookup: {
-                from: "answers",
-                localField: "answers",
-                foreignField: "id",
-                as: "question_answers",
+  try {
+    const questionsWithAnswers = await questionModel.aggregate([
+      { $match: { id: req.params.id } },
+      {
+        $lookup: {
+          from: "answers",
+          localField: "answers",
+          foreignField: "id",
+          as: "question_answers",
+        },
+      },
+      {
+        $addFields: {
+          question_answers: {
+            $map: {
+              input: "$question_answers",
+              as: "answer",
+              in: {
+                $mergeObjects: [
+                  "$$answer",
+                  {
+                    upvotesCount: { $size: "$$answer.upvoted_by" },
+                    downvotesCount: { $size: "$$answer.downvoted_by" },
+                  },
+                ],
               },
-            }, 
-            { $match: { id: req.params.id }}
-          ])
-          .exec();
-    
-        res.status(200).json({ questionsWithAnswers });
-      } catch {
-        res.status(400).json({ response: "Something went wrong while getting a question with an answwer! :(" });
-      }
+            },
+          },
+          answersCount: { $size: "$question_answers" },
+        },
+      },
+    ]).exec();
+
+    res.status(200).json({ questionsWithAnswers });
+  } catch {
+    res.status(400).json({ response: "Something went wrong while getting a question with an answwer! :(" });
+  }
+
+}
+
+
+module.exports.GET_QUESTION_WITH_ANSWERS_LOGEDIN = async (req, res) => {
+
+  
+  console.log("GET_QUESTION_WITH_ANSWERS_LOGEDIN got hit")
+ 
+    try {
+      const questionsWithAnswers = await questionModel.aggregate([
+        { $match: { id: req.params.id } },
+        {
+          $lookup: {
+            from: "answers",
+            localField: "answers",
+            foreignField: "id",
+            as: "question_answers",
+          },
+        },
+        {
+          $addFields: {
+            question_answers: {
+              $map: {
+                input: "$question_answers",
+                as: "answer",
+                in: {
+                  $mergeObjects: [
+                    "$$answer",
+                    {
+                      userUpvoted: { $in: [req.body.id, "$$answer.upvoted_by"] },
+                      userDownvoted: { $in: [req.body.id, "$$answer.downvoted_by"] },
+                      upvotesCount: { $size: "$$answer.upvoted_by" },
+                      downvotesCount: { $size: "$$answer.downvoted_by" }
+                    }
+                  ]
+                }
+              }
+            },
+            answersCount: { $size: "$question_answers" },
+          },
+        }
+      ]).exec();
+
+      res.status(200).json({ questionsWithAnswers });
+    } catch {
+      res.status(400).json({ response: "Something went wrong while getting a question with an answwer! :(" });
+    }
 
 
 
 }
+
+
 
 module.exports.DELETE_QUESTION = async (req, res) => {
 

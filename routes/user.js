@@ -7,7 +7,6 @@ const {SIGN_UP,LOGIN,GET_USER_BY_ID, GET_JWT_TOKEN} = require("../controllers/us
 router.post("/signUp", SIGN_UP );
 router.post("/logIn", LOGIN);
 router.get("/user", authMiddleware, GET_USER_BY_ID);
-router.get(`/getNewJwtToken`, authMiddleware, GET_JWT_TOKEN);
 router.post(`/verifyToken`, authMiddleware, GET_JWT_TOKEN);
 
 module.exports = router;

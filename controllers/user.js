@@ -80,6 +80,7 @@ module.exports.SIGN_UP = async (req, res) => {
       {
         email: user.email,
         id: user.id,
+        name: user.name,
       },
       process.env.JWT_SECRET,
       { expiresIn: "2h" },
@@ -92,6 +93,7 @@ module.exports.SIGN_UP = async (req, res) => {
       {
         email: user.email,
         id: user.id,
+        name: user.name,
       },
       process.env.JWT_SECRET,
       { expiresIn: "24h" },
@@ -122,6 +124,7 @@ module.exports.LOGIN = async (req, res) => {
           {
             email: user.email,
             id: user.id,
+            name:user.name
           },
           process.env.JWT_SECRET,
           { expiresIn: "2h" },
@@ -134,6 +137,7 @@ module.exports.LOGIN = async (req, res) => {
           {
             email: user.email,
             id: user.id,
+            name:user.name
           },
           process.env.JWT_SECRET,
           { expiresIn: "24h" },
@@ -157,27 +161,37 @@ module.exports.LOGIN = async (req, res) => {
 };
 
 module.exports.GET_JWT_TOKEN = async (req, res) => {
-  const jwt_token = jwt.sign(
-    {
-      email: req.body.email,
-      id: req.body.id,
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: "2h" },
-    {
-      algorithm: "RS256",
-    }
-  );
+  
 
-  return res.status(200).json({
-    response: "JWT refresh token is valid. ",
-    jwt_token: jwt_token,
-    jwt_refresh_token: jwt_refresh_token,
-  });
+  try {
+    const jwt_token = jwt.sign(
+      {
+        email: req.body.email,
+        id: req.body.id,
+        name:req.body.name 
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "2h" },
+      {
+        algorithm: "RS256",
+      }
+    );
+  
+    return res.status(200).json({
+      response: "JWT refresh token is valid. ",
+      jwt_token: jwt_token
+    });
+
+  } catch (error) {
+
+    return res.status(401).json({error})
+
+  }
+  
 };
 
 module.exports.GET_USER_BY_ID = async (req, res) => {
-  console.log("get user request")
+ 
   try {
     const user = await userModel.findOne({ id: req.body.id });
     if (!user) {
@@ -189,21 +203,3 @@ module.exports.GET_USER_BY_ID = async (req, res) => {
   }
 };
 
-module.exports.GET_JWT_TOKEN = async (req, res) => {
-  const jwt_token = jwt.sign(
-    {
-      email: req.body.email,
-      id: req.body.id,
-    },
-    process.env.JWT_SECRET,
-    { expiresIn: "2h" },
-    {
-      algorithm: "RS256",
-    }
-  );
-
-  return res.status(200).json({
-    response: "JWT refresh token is valid. ",
-    jwt_token: jwt_token
-  });
-};
