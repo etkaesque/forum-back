@@ -74,25 +74,26 @@ module.exports.UPDATE_ANSWER = async (req, res) => {
 
 module.exports.REMOVE_ANSWER = async (req, res) => {
 
+    console.log("answer delete got hit")
+    const { questionId, answerId } = req.query
 
     try {
-        await answerModel.deleteOne({ id: req.params.id})
 
-              // save answer to question   
+        await answerModel.deleteOne({ id: answerId})
 
-              questionModel
+
+              await questionModel
               .updateOne(
-                { id: questionID },
-                { $pull: { answers: answerID } }
+                { id: questionId },
+                { $pull: { answers: answerId } }
               )
               .exec();
       
-                
-               // save answer to user 
-              userModel
+            
+              await userModel
               .updateOne(
-                { id: userID },
-                { $pull: { answered: answerID } }).exec()
+                { id: req.body.id },
+                { $pull: { answered: answerId } }).exec()
   
 
 

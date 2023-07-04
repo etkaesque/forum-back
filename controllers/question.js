@@ -188,7 +188,7 @@ module.exports.DELETE_QUESTION = async (req, res) => {
     try {
         await questionModel.deleteOne({ id: req.params.id})
 
-        userModel
+        await userModel
         .updateOne(
           { id: userID },
           { $pull: { asked: req.params.id } }

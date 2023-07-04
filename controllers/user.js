@@ -111,6 +111,7 @@ module.exports.SIGN_UP = async (req, res) => {
 };
 
 module.exports.LOGIN = async (req, res) => {
+  console.log("we got a login request")
   try {
     const user = await userModel.findOne({ email: req.body.email });
 
@@ -152,10 +153,12 @@ module.exports.LOGIN = async (req, res) => {
           jwt_refresh_token: jwt_refresh_token,
         });
       } else {
+        
         return res.status(404).json({ response: "Wrong password or email" });
       }
     });
-  } catch {
+  } catch(error) {
+    console.log(error)
     return res.status(500).json({ response: "Something went wrong" });
   }
 };
@@ -179,7 +182,8 @@ module.exports.GET_JWT_TOKEN = async (req, res) => {
   
     return res.status(200).json({
       response: "JWT refresh token is valid. ",
-      jwt_token: jwt_token
+      jwt_token: jwt_token,
+      id: req.body.id,
     });
 
   } catch (error) {
