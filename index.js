@@ -7,8 +7,9 @@ const answerRouter = require("./routes/answer.js")
 const userRouter = require("./routes/user.js")
 const mongoose = require('mongoose')
 
-
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:3000' // Replace with your domain
+}));
 app.use(express.json()); 
 app.use(express.urlencoded({ extended: false })); 
 
