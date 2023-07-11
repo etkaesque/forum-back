@@ -1,7 +1,8 @@
 
 const express = require('express')
-var cors = require("cors");
 const app = express()
+var cors = require("cors");
+const bodyParser = require("body-parser");
 const questionRouter = require("./routes/question.js")
 const answerRouter = require("./routes/answer.js")
 const userRouter = require("./routes/user.js")
