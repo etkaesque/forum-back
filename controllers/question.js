@@ -87,7 +87,6 @@ module.exports.GET_ALL_QUESTIONS = async (req, res) => {
 
 module.exports.GET_QUESTION_WITH_ANSWERS = async (req, res) => {
 
-  console.log("GET_QUESTION_WITH_ANSWERS got hit")
 
   try {
     const questionsWithAnswers = await questionModel.aggregate([
@@ -133,7 +132,7 @@ module.exports.GET_QUESTION_WITH_ANSWERS = async (req, res) => {
 module.exports.GET_QUESTION_WITH_ANSWERS_LOGEDIN = async (req, res) => {
 
   
-  console.log("GET_QUESTION_WITH_ANSWERS_LOGEDIN got hit")
+
  
     try {
       const questionsWithAnswers = await questionModel.aggregate([

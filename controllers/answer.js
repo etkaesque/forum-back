@@ -7,8 +7,6 @@ const uniqid = require("uniqid")
 
 module.exports.ADD_ANSWER = async (req, res) => {
 
- 
-  
     try {
         const answer = new answerModel({
             id: uniqid(),
@@ -74,7 +72,7 @@ module.exports.UPDATE_ANSWER = async (req, res) => {
 
 module.exports.REMOVE_ANSWER = async (req, res) => {
 
-    console.log("answer delete got hit")
+    
     const { questionId, answerId } = req.query
 
     try {

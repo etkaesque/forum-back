@@ -4,7 +4,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 module.exports.SIGN_UP = async (req, res) => {
-  console.log("New User is trying to register")
+
   const user = await userModel.findOne({ email: req.body.email });
 
   if (user) {
@@ -20,8 +20,6 @@ module.exports.SIGN_UP = async (req, res) => {
   if(password != confirm_password) {
     return res.status(401).json({ response: "Password doesn't match." });
   }
-
-
 
   function checkIfPasswordGood(password) {
     if (password.length < 6) {
@@ -111,12 +109,12 @@ module.exports.SIGN_UP = async (req, res) => {
 };
 
 module.exports.LOGIN = async (req, res) => {
-  console.log("we got a login request")
+
   try {
     const user = await userModel.findOne({ email: req.body.email });
 
     if (!user) {
-      return res.status(404).json({ response: "Wrong password or email" });
+      return res.status(404).json({ message: "Wrong password or email" });
     }
 
     bcrypt.compare(req.body.password, user.password, (err, isPasswordGood) => {
@@ -128,7 +126,7 @@ module.exports.LOGIN = async (req, res) => {
             name:user.name
           },
           process.env.JWT_SECRET,
-          { expiresIn: "2h" },
+          { expiresIn: "1h" },
           {
             algorithm: "RS256",
           }
@@ -147,19 +145,18 @@ module.exports.LOGIN = async (req, res) => {
           }
         );
 
-        res.status(200).json({
-          response: "User loged in successfully",
+        return res.status(200).json({
+          message: "User authenticated successfully",
           jwt_token: jwt_token,
           jwt_refresh_token: jwt_refresh_token,
         });
+
       } else {
-        
-        return res.status(404).json({ response: "Wrong password or email" });
+        return res.status(404).json({ message: "Wrong password or email" });
       }
     });
   } catch(error) {
-    console.log(error)
-    return res.status(500).json({ response: "Something went wrong" });
+    return res.status(500).json({ message: "Something went wrong while logging in." });
   }
 };
 
