@@ -71,7 +71,6 @@ module.exports.SIGN_UP = async (req, res) => {
 
     });
 
-    console.log("User Saved");
     await user.save();
 
     const jwt_token = jwt.sign(
@@ -81,7 +80,7 @@ module.exports.SIGN_UP = async (req, res) => {
         name: user.name,
       },
       process.env.JWT_SECRET,
-      { expiresIn: "2h" },
+      { expiresIn: "8h" },
       {
         algorithm: "RS256",
       }
@@ -126,7 +125,7 @@ module.exports.LOGIN = async (req, res) => {
             name:user.name
           },
           process.env.JWT_SECRET,
-          { expiresIn: "1h" },
+          { expiresIn: "8h" },
           {
             algorithm: "RS256",
           }
