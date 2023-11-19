@@ -5,17 +5,10 @@ const uniqid = require("uniqid")
 
 
 module.exports.ASK_QUESTION = async (req, res) => {
-    
-
-
     try {
-
         const userID = req.body.id;
-
         const user = await userModel.findOne({ id: userID });
-
         const userIdObejct = user._id
-   
         const question = new questionModel({
             id: uniqid(),
             date_created: new Date(),
@@ -27,67 +20,48 @@ module.exports.ASK_QUESTION = async (req, res) => {
             },
             authorIdObect: userIdObejct,
             answers: [],
-
         })
-        
+  
         const savedQuestion = await question.save();
-
         userModel
         .updateOne(
           { id: userID },
           { $push: { asked: savedQuestion.id } }
         )
         .exec();
-
-
-
         res.status(200).json({ response: savedQuestion });
     } catch(error) {
        
         res.status(400).json({ error: error });
     }
-
 }
-
 module.exports.UPDATE_QUESTION = async (req, res) => {
-
-    try {
-
-            
+    try {   
         await questionModel.updateOne(
             {title: req.body.title,},
             {content: req.body.content},
         )
-
         res.status(200).json({ response: "Question was updated" });
 
     } catch (error) {
         res.status(400).json({ error: error });
-
     }
-
 }
 
 module.exports.GET_ALL_QUESTIONS = async (req, res) => {
-
     try {
-        const questions = await questionModel.find().populate('authorIdObect', 'name')
+        const questions = await questionModel.find().sort({ date_created: -1 }).populate('authorIdObect', 'name');
         const questionCount = await questionModel.countDocuments();
-       
+      
         res.status(200).json({ questions, questionCount });
 
     } catch (error) {
- 
         res.status(400).json({ error });
-    }
-
-    
+    }  
 
 }
 
 module.exports.GET_QUESTION_WITH_ANSWERS = async (req, res) => {
-
-
   try {
     const questionsWithAnswers = await questionModel.aggregate([
       { $match: { id: req.params.id } },
@@ -131,9 +105,6 @@ module.exports.GET_QUESTION_WITH_ANSWERS = async (req, res) => {
 
 module.exports.GET_QUESTION_WITH_ANSWERS_LOGEDIN = async (req, res) => {
 
-  
-
- 
     try {
       const questionsWithAnswers = await questionModel.aggregate([
         { $match: { id: req.params.id } },
@@ -174,16 +145,13 @@ module.exports.GET_QUESTION_WITH_ANSWERS_LOGEDIN = async (req, res) => {
       res.status(400).json({ response: "Something went wrong while getting a question with an answwer! :(" });
     }
 
-
-
 }
 
 
 
 module.exports.DELETE_QUESTION = async (req, res) => {
 
-    const userID = req.body.id; // get from auth
-
+    const userID = req.body.id;
     try {
         await questionModel.deleteOne({ id: req.params.id})
 
@@ -193,8 +161,6 @@ module.exports.DELETE_QUESTION = async (req, res) => {
           { $pull: { asked: req.params.id } }
         )
         .exec();
-
-
         res.status(200).json({ response: "Question was deleted" });
 
     } catch (error) {
